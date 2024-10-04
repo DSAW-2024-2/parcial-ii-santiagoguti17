@@ -1,29 +1,29 @@
-// routes/auth.js
+// rutas/autenticacion.js
 const express = require('express');
-const router = express.Router();
+const enrutador = express.Router();
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// Credenciales de usuario
-const USER = {
-  email: 'admin@admin.com',
-  password: 'admin',
+// Datos de usuario
+const CREDENCIALES = {
+  correo: 'admin@admin.com',
+  contraseña: 'admin',
 };
 
 // Clave secreta para JWT
-const SECRET_KEY = process.env.SECRET_KEY;
+const CLAVE_SECRETA = process.env.SECRET_KEY;
 
-router.post('/', (req, res) => {
-  const { email, password } = req.body;
+enrutador.post('/', (req, res) => {
+  const { correo, contraseña } = req.body;
 
-  // Validar credenciales
-  if (email === USER.email && password === USER.password) {
+  // Verificar credenciales
+  if (correo === CREDENCIALES.correo && contraseña === CREDENCIALES.contraseña) {
     // Generar token sin fecha de expiración
-    const token = jwt.sign({ email }, SECRET_KEY);  // Sin expiresIn
-    res.json({ token });
+    const tokenJWT = jwt.sign({ correo }, CLAVE_SECRETA);  // Sin expiresIn
+    res.json({ token: tokenJWT });
   } else {
-    res.status(401).json({ message: 'Credenciales inválidas' });
+    res.status(401).json({ mensaje: 'Credenciales incorrectas' });
   }
 });
 
-module.exports = router;
+module.exports = enrutador;

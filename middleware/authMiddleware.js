@@ -1,24 +1,28 @@
-// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = process.env.SECRET_KEY;
+const CLAVE_SECRETA = process.env.SECRET_KEY;
 
-function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+function verificarToken(req, res, next) {
+  const encabezadoAutorizacion = req.headers.authorization;
 
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-      if (err) {
-        return res.status(403).json({ message: 'Token inválido o expirado' });
-      }
-      req.user = user;
-      next();
-    });
-  } else {
-    res.status(403).json({ message: 'Se requiere autenticación' });
+  if (!encabezadoAutorizacion) {
+    return res.status(403).json({ mensaje: 'Se requiere autenticación' });
   }
+
+  const partes = encabezadoAutorizacion.split(' ');
+  const token = partes.length === 2 ? partes[1] : null;
+
+  if (!token) {
+    return res.status(403).json({ mensaje: 'Token no proporcionado' });
+  }
+
+  jwt.verify(token, CLAVE_SECRETA, (error, usuarioDecodificado) => {
+    if (error) {
+      return res.status(403).json({ mensaje: 'Token inválido o expirado' });
+    }
+    req.usuario = usuarioDecodificado;
+    next();
+  });
 }
 
-module.exports = authMiddleware;
+module.exports = verificarToken;
