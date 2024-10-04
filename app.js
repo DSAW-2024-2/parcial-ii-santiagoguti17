@@ -1,24 +1,27 @@
-// servidor.js
+// server.js
 const express = require('express');
-const aplicacion = express();
-const rutasAutenticacion = require('./routes/auth');
-const rutasClima = require('./routes/weather');
+const app = express();
+const authRoutes = require('./routes/auth');
+const weatherRoutes = require('./routes/weather');
 require('dotenv').config();
 
-// Middleware
-aplicacion.use(express.json());
 
-// Configuración de rutas
-aplicacion.use('/login', rutasAutenticacion);
-aplicacion.use('/clima', rutasClima);
 
-// Manejo de rutas no existentes
-aplicacion.use((solicitud, respuesta) => {
-  respuesta.status(404).json({ mensaje: 'La ruta solicitada no existe' });
+// Middlewares
+app.use(express.json());
+
+
+// Rutas
+app.use('/login', authRoutes);
+app.use('/weather', weatherRoutes);
+
+// Manejo de rutas no definidas
+app.use((req, res) => {
+  res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
 // Iniciar el servidor
-const PUERTO = process.env.PORT || 3000;
-aplicacion.listen(PUERTO, () => {
-  console.log(`El servidor está corriendo en el puerto ${PUERTO}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
