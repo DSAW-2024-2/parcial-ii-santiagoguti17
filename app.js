@@ -1,8 +1,8 @@
 // servidor.js
 const express = require('express');
 const aplicacion = express();
-const rutasAutenticacion = require('./rutas/auth');
-const rutasClima = require('./rutas/weather');
+const rutasAutenticacion = require('./routes/auth');
+const rutasClima = require('./routes/weather');
 require('dotenv').config();
 
 // Middleware
