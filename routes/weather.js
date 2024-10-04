@@ -1,34 +1,34 @@
-// rutas/clima.js
+// routes/weather.js
 const express = require('express');
-const enrutador = express.Router();
+const router = express.Router();
 const axios = require('axios');
-const middlewareAutenticacion = require('../middleware/authMiddleware');
+const authMiddleware = require('../middleware/authMiddleware');
 
-enrutador.get('/', middlewareAutenticacion, async (solicitud, respuesta) => {
-  const { latitud, longitud } = solicitud.query;
+router.get('/', authMiddleware, async (req, res) => {
+  const { latitude, longitude } = req.query;
 
-  // Comprobar que los parámetros existen
-  if (!latitud || !longitud) {
-    return respuesta.status(400).json({ mensaje: 'Los parámetros latitud y longitud son necesarios' });
+  // Validar que los parámetros existan
+  if (!latitude || !longitude) {
+    return res.status(400).json({ message: 'Se requieren los parámetros latitude y longitude' });
   }
 
   try {
-    // Hacer la petición a Open Meteo
-    const resultado = await axios.get('https://api.open-meteo.com/v1/forecast', {
+    // Realizar la solicitud a Open Meteo
+    const response = await axios.get('https://api.open-meteo.com/v1/forecast', {
       params: {
-        latitude: latitud,
-        longitude: longitud,
+        latitude,
+        longitude,
         current_weather: true,
       },
     });
 
-    const temperatura = resultado.data.current_weather.temperature;
+    const temperature = response.data.current_weather.temperature;
 
-    respuesta.json({ temperatura });
+    res.json({ temperature });
   } catch (error) {
     console.error(error);
-    respuesta.status(500).json({ mensaje: 'Error al obtener los datos del clima' });
+    res.status(500).json({ message: 'Error al obtener los datos meteorológicos' });
   }
 });
 
-module.exports = enrutador;
+module.exports = router;
