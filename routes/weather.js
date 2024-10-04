@@ -7,9 +7,14 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.get('/', authMiddleware, async (req, res) => {
   const { latitude, longitude } = req.query;
 
-  // Validar que los parámetros existan
+  // Validar que los parámetros existan y sean números válidos
   if (!latitude || !longitude) {
     return res.status(400).json({ message: 'Se requieren los parámetros latitude y longitude' });
+  }
+
+  // Validar que latitude y longitude sean números válidos
+  if (isNaN(latitude) || isNaN(longitude)) {
+    return res.status(400).json({ message: 'Los parámetros latitude y longitude deben ser números válidos' });
   }
 
   try {
